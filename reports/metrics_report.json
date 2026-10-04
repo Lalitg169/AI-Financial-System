@@ -1,0 +1,85 @@
+{
+  "fraud": {
+    "random_forest": {
+      "precision": 1.0,
+      "recall": 0.9667,
+      "f1_score": 0.9831,
+      "report": "              precision    recall  f1-score   support\n\n           0       1.00      1.00      1.00       970\n           1       1.00      0.97      0.98        30\n\n    accuracy                           1.00      1000\n   macro avg       1.00      0.98      0.99      1000\nweighted avg       1.00      1.00      1.00      1000\n",
+      "confusion_matrix": [
+        [
+          970,
+          0
+        ],
+        [
+          1,
+          29
+        ]
+      ]
+    },
+    "isolation_forest": {
+      "precision": 0.931,
+      "recall": 0.9,
+      "f1_score": 0.9153
+    },
+    "feature_importance": {
+      "amount": 0.0655,
+      "time_of_day": 0.1318,
+      "transaction_freq": 0.4508,
+      "distance_from_home": 0.1761,
+      "v1": 0.0816,
+      "v2": 0.0679,
+      "v3": 0.0263
+    }
+  },
+  "credit": {
+    "logistic_regression": {
+      "precision": 0.7143,
+      "recall": 0.9124,
+      "f1_score": 0.8013,
+      "auc_roc": 0.9693,
+      "report": "              precision    recall  f1-score   support\n\n           0       0.97      0.89      0.93       463\n           1       0.71      0.91      0.80       137\n\n    accuracy                           0.90       600\n   macro avg       0.84      0.90      0.87       600\nweighted avg       0.91      0.90      0.90       600\n"
+    },
+    "decision_tree": {
+      "precision": 0.6816,
+      "recall": 0.8905,
+      "f1_score": 0.7722,
+      "auc_roc": 0.9368
+    },
+    "feature_importance_dt": {
+      "age": 0.0011,
+      "income": 0.3378,
+      "loan_amount": 0.1935,
+      "loan_tenure": 0.0,
+      "credit_score": 0.3551,
+      "existing_loans": 0.1125,
+      "employment_type": 0.0,
+      "education": 0.0
+    },
+    "feature_importance_lr": {
+      "age": 0.0224,
+      "income": 2.5411,
+      "loan_amount": 1.9275,
+      "loan_tenure": 0.0799,
+      "credit_score": 2.9054,
+      "existing_loans": 2.1329,
+      "employment_type": 0.1113,
+      "education": 0.1141
+    }
+  },
+  "inflation": {
+    "aic": 107.52,
+    "bic": 121.41,
+    "mae": 0.3266,
+    "rmse": 0.5572,
+    "adf": {
+      "adf_stat": -1.6227,
+      "p_value": 0.4713,
+      "stationary": false
+    },
+    "order": [
+      2,
+      1,
+      2
+    ]
+  }
+}
