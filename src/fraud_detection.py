@@ -5,25 +5,22 @@ Fraud Detection Module
 """
 import numpy as np
 import pandas as pd
-import joblib, os
-from pathlib import Path
+import joblib
 
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, confusion_matrix)
 
-ROOT = Path(__file__).parent.parent
-MODEL_DIR = ROOT / "models"
-MODEL_DIR.mkdir(exist_ok=True)
+from config import MODEL_DIR, FRAUD_FEATURES, RANDOM_STATE, TEST_SIZE
 
 
 def train_fraud_models(X, y, feature_names):
     X_tr, X_te, y_tr, y_te = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42)
+        X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE)
 
     # ── Isolation Forest ──────────────────────────────────────────────────
-    iso = IsolationForest(contamination=0.03, random_state=42, n_estimators=100)
+    iso = IsolationForest(contamination=0.03, random_state=RANDOM_STATE, n_estimators=100)
     iso.fit(X_tr)
     iso_scores = iso.decision_function(X_te)          # anomaly score
     iso_preds  = (iso.predict(X_te) == -1).astype(int)
@@ -31,7 +28,7 @@ def train_fraud_models(X, y, feature_names):
     # ── Random Forest ─────────────────────────────────────────────────────
     rf = RandomForestClassifier(
         n_estimators=200, class_weight="balanced",
-        random_state=42, n_jobs=-1)
+        random_state=RANDOM_STATE, n_jobs=-1)
     rf.fit(X_tr, y_tr)
     rf_preds = rf.predict(X_te)
     rf_proba = rf.predict_proba(X_te)[:, 1]
@@ -66,9 +63,7 @@ def predict_fraud(features: dict):
     rf  = joblib.load(MODEL_DIR / "fraud_rf.pkl")
     iso = joblib.load(MODEL_DIR / "fraud_iso.pkl")
 
-    keys = ["amount", "time_of_day", "transaction_freq",
-            "distance_from_home", "v1", "v2", "v3"]
-    row = np.array([[features.get(k, 0) for k in keys]])
+    row = np.array([[features.get(k, 0) for k in FRAUD_FEATURES]])
 
     rf_pred  = int(rf.predict(row)[0])
     rf_proba = float(rf.predict_proba(row)[0][1])
