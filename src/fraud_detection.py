@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, confusion_matrix)
 
-from config import MODEL_DIR, FRAUD_FEATURES, RANDOM_STATE, TEST_SIZE
+from src.config import MODEL_DIR, FRAUD_FEATURES, RANDOM_STATE, TEST_SIZE
 
 
 def train_fraud_models(X, y, feature_names):
