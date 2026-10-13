@@ -6,18 +6,14 @@ Credit Risk Prediction Module
 import numpy as np
 import pandas as pd
 import joblib
-from pathlib import Path
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, roc_auc_score)
-from sklearn.preprocessing import LabelEncoder
 
-ROOT      = Path(__file__).parent.parent
-MODEL_DIR = ROOT / "models"
-MODEL_DIR.mkdir(exist_ok=True)
+from src.config import MODEL_DIR, RANDOM_STATE, TEST_SIZE
 
 
 def risk_category(prob: float) -> str:
@@ -30,16 +26,16 @@ def risk_category(prob: float) -> str:
 
 def train_credit_models(X, y, feature_names):
     X_tr, X_te, y_tr, y_te = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42)
+        X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE)
 
     # ── Logistic Regression ───────────────────────────────────────────────
-    lr = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42)
+    lr = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=RANDOM_STATE)
     lr.fit(X_tr, y_tr)
     lr_preds = lr.predict(X_te)
     lr_proba = lr.predict_proba(X_te)[:, 1]
 
     # ── Decision Tree ─────────────────────────────────────────────────────
-    dt = DecisionTreeClassifier(max_depth=6, class_weight="balanced", random_state=42)
+    dt = DecisionTreeClassifier(max_depth=6, class_weight="balanced", random_state=RANDOM_STATE)
     dt.fit(X_tr, y_tr)
     dt_preds = dt.predict(X_te)
     dt_proba = dt.predict_proba(X_te)[:, 1]

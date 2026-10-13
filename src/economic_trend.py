@@ -7,14 +7,11 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 import joblib
-from pathlib import Path
 
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.stattools import adfuller
 
-ROOT      = Path(__file__).parent.parent
-MODEL_DIR = ROOT / "models"
-MODEL_DIR.mkdir(exist_ok=True)
+from src.config import MODEL_DIR
 
 
 def adf_test(series):
