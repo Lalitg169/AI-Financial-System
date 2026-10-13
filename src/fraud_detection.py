@@ -62,8 +62,10 @@ def predict_fraud(features: dict):
     """Single-record prediction for API."""
     rf  = joblib.load(MODEL_DIR / "fraud_rf.pkl")
     iso = joblib.load(MODEL_DIR / "fraud_iso.pkl")
+    scaler = joblib.load(MODEL_DIR / "fraud_scaler.pkl")
 
     row = np.array([[features.get(k, 0) for k in FRAUD_FEATURES]])
+    row = scaler.fit_transform(row)
 
     rf_pred  = int(rf.predict(row)[0])
     rf_proba = float(rf.predict_proba(row)[0][1])
