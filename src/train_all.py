@@ -8,7 +8,9 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+import joblib
 import pandas as pd
+from src.config import MODEL_DIR
 from data.generate_data import generate_fraud_data, generate_credit_data, generate_inflation_data
 from src.preprocessing  import preprocess_fraud, preprocess_credit, preprocess_inflation
 from src.fraud_detection import train_fraud_models
@@ -31,13 +33,16 @@ def main():
     print("\n[2/3a] Training Fraud Detection models …")
     X_f, y_f, scaler_f, feat_f = preprocess_fraud(fraud_df)
     fraud_metrics, rf, iso      = train_fraud_models(X_f, y_f, feat_f)
+    joblib.dump(scaler_f, MODEL_DIR / "fraud_scaler.pkl")
     print("  RF  F1:", fraud_metrics["random_forest"]["f1_score"])
     print("  ISO F1:", fraud_metrics["isolation_forest"]["f1_score"])
 
     # ── Credit ────────────────────────────────────────────────────────────
     print("\n[2/3b] Training Credit Risk models …")
-    X_c, y_c, scaler_c, feat_c, _ = preprocess_credit(credit_df)
-    credit_metrics, lr, dt         = train_credit_models(X_c, y_c, feat_c)
+    X_c, y_c, scaler_c, feat_c, encoders_c = preprocess_credit(credit_df)
+    credit_metrics, lr, dt                  = train_credit_models(X_c, y_c, feat_c)
+    joblib.dump(scaler_c,   MODEL_DIR / "credit_scaler.pkl")
+    joblib.dump(encoders_c, MODEL_DIR / "credit_encoders.pkl")
     print("  LR  AUC:", credit_metrics["logistic_regression"]["auc_roc"])
     print("  DT  AUC:", credit_metrics["decision_tree"]["auc_roc"])
 

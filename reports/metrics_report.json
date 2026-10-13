@@ -22,13 +22,13 @@
       "f1_score": 0.9153
     },
     "feature_importance": {
-      "amount": 0.0655,
-      "time_of_day": 0.1318,
-      "transaction_freq": 0.4508,
-      "distance_from_home": 0.1761,
-      "v1": 0.0816,
-      "v2": 0.0679,
-      "v3": 0.0263
+      "amount": 0.0712,
+      "time_of_day": 0.1379,
+      "transaction_freq": 0.4594,
+      "distance_from_home": 0.1763,
+      "v1": 0.0797,
+      "v2": 0.0531,
+      "v3": 0.0223
     }
   },
   "credit": {

@@ -27,6 +27,9 @@ smart_financial_risk/
 │   ├── fraud_iso.pkl             # Trained Isolation Forest
 │   ├── credit_lr.pkl             # Trained Logistic Regression
 │   ├── credit_dt.pkl             # Trained Decision Tree
+│   ├── fraud_scaler.pkl          # StandardScaler fitted on fraud features
+│   ├── credit_scaler.pkl         # StandardScaler fitted on credit features
+│   ├── credit_encoders.pkl       # LabelEncoders for employment_type, education
 │   └── arima_model.pkl           # Trained ARIMA model
 │
 ├── api/
@@ -86,8 +89,8 @@ python src/train_all.py
 
 | Module | Preprocessing | Models | Output |
 |--------|--------------|--------|--------|
-| Fraud | Median impute → StandardScaler | Isolation Forest, Random Forest | fraud_rf.pkl, fraud_iso.pkl |
-| Credit | Label encode → StandardScaler | Logistic Regression, Decision Tree | credit_lr.pkl, credit_dt.pkl |
+| Fraud | Median impute → StandardScaler | Isolation Forest, Random Forest | fraud_rf.pkl, fraud_iso.pkl, fraud_scaler.pkl |
+| Credit | Label encode → StandardScaler | Logistic Regression, Decision Tree | credit_lr.pkl, credit_dt.pkl, credit_scaler.pkl, credit_encoders.pkl |
 | Inflation | Date index, fill median | ARIMA(2,1,2) | arima_model.pkl |
 
 **Expected metrics:**
