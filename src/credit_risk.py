@@ -70,10 +70,14 @@ def predict_credit(features: dict):
     """Single-record prediction for API."""
     lr = joblib.load(MODEL_DIR / "credit_lr.pkl")
     dt = joblib.load(MODEL_DIR / "credit_dt.pkl")
+    scaler   = joblib.load(MODEL_DIR / "credit_scaler.pkl")
+    encoders = joblib.load(MODEL_DIR / "credit_encoders.pkl")
 
-    # encode employment_type and education simply
-    emp_map = {"Salaried": 0, "Self-employed": 1, "Business": 2}
-    edu_map = {"Graduate": 0, "Post-Graduate": 1, "Under-Graduate": 2}
+    # same label encoding as training (alphabetical order from LabelEncoder)
+    emp = encoders["employment_type"].transform(
+        [features.get("employment_type", "Salaried")])[0]
+    edu = encoders["education"].transform(
+        [features.get("education", "Graduate")])[0]
 
     row = np.array([[
         features.get("age", 30),
@@ -82,9 +86,10 @@ def predict_credit(features: dict):
         features.get("loan_tenure", 36),
         features.get("credit_score", 650),
         features.get("existing_loans", 0),
-        emp_map.get(features.get("employment_type", "Salaried"), 0),
-        edu_map.get(features.get("education", "Graduate"), 0),
+        emp,
+        edu,
     ]])
+    row = scaler.transform(row)
 
     lr_prob = float(lr.predict_proba(row)[0][1])
     dt_prob = float(dt.predict_proba(row)[0][1])
