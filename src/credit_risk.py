@@ -9,11 +9,10 @@ import joblib
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, roc_auc_score)
 
-from src.config import MODEL_DIR, RANDOM_STATE, TEST_SIZE
+from src.config import MODEL_DIR, RANDOM_STATE
 
 
 def risk_category(prob: float) -> str:
@@ -24,9 +23,8 @@ def risk_category(prob: float) -> str:
     return "High"
 
 
-def train_credit_models(X, y, feature_names):
-    X_tr, X_te, y_tr, y_te = train_test_split(
-        X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE)
+def train_credit_models(splits, feature_names):
+    X_tr, X_te, y_tr, y_te = splits
 
     # ── Logistic Regression ───────────────────────────────────────────────
     lr = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=RANDOM_STATE)

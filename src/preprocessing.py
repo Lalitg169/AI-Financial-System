@@ -1,50 +1,54 @@
 """
 Reusable preprocessing pipeline for all modules.
+
+Imputers and scalers are fitted on the training split only, then applied
+to the test split, so no information from test rows leaks into training.
 """
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
+
+from src.config import (FRAUD_FEATURES, FRAUD_TARGET, CREDIT_NUM_FEATURES,
+                        CREDIT_CAT_FEATURES, CREDIT_TARGET, RANDOM_STATE, TEST_SIZE)
 
 
-def preprocess_fraud(df: pd.DataFrame):
-    """Returns X, y and fitted scaler."""
-    df = df.copy()
-    num_cols = ["amount", "time_of_day", "transaction_freq",
-                "distance_from_home", "v1", "v2", "v3"]
+def _split_and_scale(df, feature_cols, target_col):
+    """Split first, then fit imputer + scaler on the training rows only."""
+    X = df[feature_cols].values
+    y = df[target_col].values
+    X_tr, X_te, y_tr, y_te = train_test_split(
+        X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE)
 
     imputer = SimpleImputer(strategy="median")
     scaler  = StandardScaler()
+    X_tr = scaler.fit_transform(imputer.fit_transform(X_tr))
+    X_te = scaler.transform(imputer.transform(X_te))
+    return X_tr, X_te, y_tr, y_te, scaler
 
-    df[num_cols] = imputer.fit_transform(df[num_cols])
-    X = scaler.fit_transform(df[num_cols])
-    y = df["is_fraud"].values
-    return X, y, scaler, num_cols
+
+def preprocess_fraud(df: pd.DataFrame):
+    """Returns (X_tr, X_te, y_tr, y_te), fitted scaler and feature names."""
+    X_tr, X_te, y_tr, y_te, scaler = _split_and_scale(df, FRAUD_FEATURES, FRAUD_TARGET)
+    return (X_tr, X_te, y_tr, y_te), scaler, FRAUD_FEATURES
 
 
 def preprocess_credit(df: pd.DataFrame):
-    """Returns X, y, scaler and feature names after encoding."""
+    """Returns (X_tr, X_te, y_tr, y_te), scaler, feature names and encoders."""
     df = df.copy()
 
-    # Label-encode categoricals
-    cat_cols = ["employment_type", "education"]
+    # Label-encode categoricals (category list is fixed, so no leakage here)
     le_map = {}
-    for c in cat_cols:
+    for c in CREDIT_CAT_FEATURES:
         le = LabelEncoder()
         df[c] = le.fit_transform(df[c].astype(str))
         le_map[c] = le
 
-    num_cols = ["age", "income", "loan_amount", "loan_tenure",
-                "credit_score", "existing_loans"] + cat_cols
-
-    imputer = SimpleImputer(strategy="median")
-    scaler  = StandardScaler()
-
-    df[num_cols] = imputer.fit_transform(df[num_cols])
-    X = scaler.fit_transform(df[num_cols])
-    y = df["default"].values
-    return X, y, scaler, num_cols, le_map
+    num_cols = CREDIT_NUM_FEATURES + CREDIT_CAT_FEATURES
+    X_tr, X_te, y_tr, y_te, scaler = _split_and_scale(df, num_cols, CREDIT_TARGET)
+    return (X_tr, X_te, y_tr, y_te), scaler, num_cols, le_map
 
 
 def preprocess_inflation(df: pd.DataFrame):
