@@ -4,17 +4,20 @@ Endpoints:
   POST /predict-fraud
   POST /predict-credit
   GET  /forecast-inflation?steps=6
+  GET  /model-info
   GET  /health
 """
-import sys
+import sys, json
 from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
+import sklearn
 from flask import Flask, request, jsonify
 from src.fraud_detection import predict_fraud
 from src.credit_risk      import predict_credit
 from src.economic_trend   import forecast_inflation
+from src.config           import MODEL_DIR, REPORT_DIR
 from src.logger           import get_logger
 from src.validation       import validate_fraud_input, validate_credit_input
 
@@ -97,6 +100,28 @@ def forecast_endpoint():
     except Exception as e:
         log.exception("Forecast failed")
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/model-info", methods=["GET"])
+def model_info():
+    """Headline metrics from the last training run and the saved model files."""
+    try:
+        report = json.loads((REPORT_DIR / "metrics_report.json").read_text())
+    except FileNotFoundError:
+        return jsonify({"success": False, "error": "No metrics report. Run src/train_all.py first."}), 404
+
+    fraud, credit, infl = report["fraud"], report["credit"], report["inflation"]
+    metrics = {
+        "fraud": {name: {k: fraud[name][k] for k in ("precision", "recall", "f1_score")}
+                  for name in ("random_forest", "isolation_forest")},
+        "credit": {name: {k: credit[name][k] for k in ("precision", "recall", "f1_score", "auc_roc")}
+                   for name in ("logistic_regression", "decision_tree")},
+        "inflation": {k: infl[k] for k in ("order", "aic", "rmse", "mae")},
+    }
+    artifacts = {f.name: f"{f.stat().st_size / 1024:.1f} KB"
+                 for f in sorted(MODEL_DIR.glob("*.pkl"))}
+    return jsonify({"success": True, "metrics": metrics, "artifacts": artifacts,
+                    "scikit_learn_version": sklearn.__version__}), 200
 
 
 if __name__ == "__main__":

@@ -192,6 +192,23 @@ Response:
 }
 ```
 
+#### `GET /model-info`
+Returns headline metrics from the last training run (`reports/metrics_report.json`),
+the saved model files, and the scikit-learn version serving them.
+
+```json
+{
+  "success": true,
+  "metrics": {
+    "fraud":     {"random_forest": {"precision": 1.0, "recall": 1.0, "f1_score": 1.0}, "...": "..."},
+    "credit":    {"logistic_regression": {"auc_roc": 0.9693, "...": "..."}, "...": "..."},
+    "inflation": {"order": [2, 1, 2], "aic": 107.52, "rmse": 0.5572, "mae": 0.3266}
+  },
+  "artifacts": {"fraud_rf.pkl": "445.6 KB", "...": "..."},
+  "scikit_learn_version": "1.9.1"
+}
+```
+
 ---
 
 ### STEP 5 — Launch the Streamlit Dashboard
