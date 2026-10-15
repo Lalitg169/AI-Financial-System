@@ -16,41 +16,42 @@ from src.preprocessing  import preprocess_fraud, preprocess_credit, preprocess_i
 from src.fraud_detection import train_fraud_models
 from src.credit_risk     import train_credit_models
 from src.economic_trend  import train_arima
+from src.logger          import get_logger
+
+log = get_logger("train_all")
 
 
 def main():
-    print("=" * 60)
-    print("  Smart Financial Risk Intelligence System – Training")
-    print("=" * 60)
+    log.info("Smart Financial Risk Intelligence System – Training")
 
     # ── Generate data ─────────────────────────────────────────────────────
-    print("\n[1/3] Generating datasets …")
+    log.info("[1/3] Generating datasets")
     fraud_df     = generate_fraud_data()
     credit_df    = generate_credit_data()
     inflation_df = generate_inflation_data()
 
     # ── Fraud ─────────────────────────────────────────────────────────────
-    print("\n[2/3a] Training Fraud Detection models …")
+    log.info("[2/3a] Training fraud detection models")
     splits_f, scaler_f, feat_f = preprocess_fraud(fraud_df)
     fraud_metrics, rf, iso     = train_fraud_models(splits_f, feat_f)
     joblib.dump(scaler_f, MODEL_DIR / "fraud_scaler.pkl")
-    print("  RF  F1:", fraud_metrics["random_forest"]["f1_score"])
-    print("  ISO F1:", fraud_metrics["isolation_forest"]["f1_score"])
+    log.info("RF F1=%s | ISO F1=%s", fraud_metrics["random_forest"]["f1_score"],
+             fraud_metrics["isolation_forest"]["f1_score"])
 
     # ── Credit ────────────────────────────────────────────────────────────
-    print("\n[2/3b] Training Credit Risk models …")
+    log.info("[2/3b] Training credit risk models")
     splits_c, scaler_c, feat_c, encoders_c = preprocess_credit(credit_df)
     credit_metrics, lr, dt                  = train_credit_models(splits_c, feat_c)
     joblib.dump(scaler_c,   MODEL_DIR / "credit_scaler.pkl")
     joblib.dump(encoders_c, MODEL_DIR / "credit_encoders.pkl")
-    print("  LR  AUC:", credit_metrics["logistic_regression"]["auc_roc"])
-    print("  DT  AUC:", credit_metrics["decision_tree"]["auc_roc"])
+    log.info("LR AUC=%s | DT AUC=%s", credit_metrics["logistic_regression"]["auc_roc"],
+             credit_metrics["decision_tree"]["auc_roc"])
 
     # ── ARIMA ─────────────────────────────────────────────────────────────
-    print("\n[2/3c] Training ARIMA (Inflation) model …")
+    log.info("[2/3c] Training ARIMA inflation model")
     ts_df           = preprocess_inflation(inflation_df)
     arima_metrics, arima_results = train_arima(ts_df)
-    print("  AIC:", arima_metrics["aic"], " | RMSE:", arima_metrics["rmse"])
+    log.info("AIC=%s | RMSE=%s", arima_metrics["aic"], arima_metrics["rmse"])
 
     # ── Save report ───────────────────────────────────────────────────────
     report = {
@@ -69,7 +70,7 @@ def main():
     with open(ROOT / "reports" / "metrics_report.json", "w") as f:
         json.dump(report, f, indent=2, cls=_Encoder)
 
-    print("\n✅  All models trained & saved.  Reports → reports/metrics_report.json")
+    log.info("All models trained and saved. Report: reports/metrics_report.json")
 
 
 if __name__ == "__main__":

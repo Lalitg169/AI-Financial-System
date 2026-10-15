@@ -13,6 +13,9 @@ from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, roc_auc_score)
 
 from src.config import MODEL_DIR, RANDOM_STATE
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 
 def risk_category(prob: float) -> str:
@@ -60,7 +63,7 @@ def train_credit_models(splits, feature_names):
 
     joblib.dump(lr, MODEL_DIR / "credit_lr.pkl")
     joblib.dump(dt, MODEL_DIR / "credit_dt.pkl")
-    print("Credit models saved ✓")
+    log.info("Credit models saved to %s", MODEL_DIR)
     return metrics, lr, dt
 
 

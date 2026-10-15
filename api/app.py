@@ -13,6 +13,9 @@ sys.path.insert(0, str(ROOT))
 from flask import Flask, request, jsonify
 from src.fraud_detection import predict_fraud
 from src.credit_risk      import predict_credit
+from src.logger           import get_logger
+
+log = get_logger("api")
 
 app = Flask(__name__)
 
@@ -68,5 +71,5 @@ def credit_endpoint():
 
 
 if __name__ == "__main__":
-    print("Starting Flask API on http://localhost:5000")
+    log.info("Starting Flask API on http://localhost:5000")
     app.run(debug=False, host="0.0.0.0", port=5000)

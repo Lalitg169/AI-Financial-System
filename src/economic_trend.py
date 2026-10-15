@@ -12,6 +12,9 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.stattools import adfuller
 
 from src.config import MODEL_DIR
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 
 def adf_test(series):
@@ -59,7 +62,7 @@ def train_arima(df: pd.DataFrame, order=(2, 1, 2), forecast_steps=6):
     }
 
     joblib.dump({"fitted_model": fitted, "order": order}, MODEL_DIR / "arima_model.pkl")
-    print("ARIMA model saved ✓")
+    log.info("ARIMA model saved to %s", MODEL_DIR)
     return metrics, results
 
 

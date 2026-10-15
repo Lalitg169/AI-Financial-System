@@ -12,6 +12,9 @@ from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, confusion_matrix)
 
 from src.config import MODEL_DIR, FRAUD_FEATURES, RANDOM_STATE
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 
 def train_fraud_models(splits, feature_names):
@@ -52,7 +55,7 @@ def train_fraud_models(splits, feature_names):
     # ── Persist ───────────────────────────────────────────────────────────
     joblib.dump(rf,  MODEL_DIR / "fraud_rf.pkl")
     joblib.dump(iso, MODEL_DIR / "fraud_iso.pkl")
-    print("Fraud models saved ✓")
+    log.info("Fraud models saved to %s", MODEL_DIR)
     return metrics, rf, iso
 
 
