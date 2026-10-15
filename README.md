@@ -163,6 +163,19 @@ Response:
 }
 ```
 
+#### Input validation
+
+All fields are required. Numeric fields must be numbers, and
+`employment_type` / `education` must be one of the categories the model was
+trained on. Invalid requests return `400` with a readable message:
+
+```json
+{
+  "success": false,
+  "error": "employment_type must be one of: Business, Salaried, Self-employed"
+}
+```
+
 ---
 
 ### STEP 5 — Launch the Streamlit Dashboard
