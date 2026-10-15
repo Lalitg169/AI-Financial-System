@@ -14,6 +14,7 @@ from flask import Flask, request, jsonify
 from src.fraud_detection import predict_fraud
 from src.credit_risk      import predict_credit
 from src.logger           import get_logger
+from src.validation       import validate_fraud_input
 
 log = get_logger("api")
 
@@ -39,8 +40,13 @@ def fraud_endpoint():
       "v3": 1.8
     }
     """
+    data  = request.get_json(silent=True)
+    error = validate_fraud_input(data)
+    if error:
+        log.warning("Rejected /predict-fraud request: %s", error)
+        return jsonify({"success": False, "error": error}), 400
+
     try:
-        data   = request.get_json(force=True)
         result = predict_fraud(data)
         return jsonify({"success": True, "prediction": result}), 200
     except Exception as e:
