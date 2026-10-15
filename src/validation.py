@@ -12,7 +12,8 @@ def _check_numeric_fields(data, fields):
     if not isinstance(data, dict):
         return "Request body must be a JSON object"
 
-    missing = [f for f in fields if not data.get(f)]
+    # `is None` rather than `not`: 0 is a valid value (midnight, no loans)
+    missing = [f for f in fields if data.get(f) is None]
     if missing:
         return f"Missing required fields: {', '.join(missing)}"
 
