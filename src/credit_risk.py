@@ -14,6 +14,7 @@ from sklearn.metrics import (classification_report, precision_score,
 
 from src.config import MODEL_DIR, RANDOM_STATE
 from src.logger import get_logger
+from src.model_store import load_artifact
 
 log = get_logger(__name__)
 
@@ -69,10 +70,10 @@ def train_credit_models(splits, feature_names):
 
 def predict_credit(features: dict):
     """Single-record prediction for API."""
-    lr = joblib.load(MODEL_DIR / "credit_lr.pkl")
-    dt = joblib.load(MODEL_DIR / "credit_dt.pkl")
-    scaler   = joblib.load(MODEL_DIR / "credit_scaler.pkl")
-    encoders = joblib.load(MODEL_DIR / "credit_encoders.pkl")
+    lr       = load_artifact("credit_lr.pkl")
+    dt       = load_artifact("credit_dt.pkl")
+    scaler   = load_artifact("credit_scaler.pkl")
+    encoders = load_artifact("credit_encoders.pkl")
 
     # same label encoding as training (alphabetical order from LabelEncoder)
     emp = encoders["employment_type"].transform(

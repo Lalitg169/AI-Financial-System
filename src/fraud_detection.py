@@ -13,6 +13,7 @@ from sklearn.metrics import (classification_report, precision_score,
 
 from src.config import MODEL_DIR, FRAUD_FEATURES, RANDOM_STATE
 from src.logger import get_logger
+from src.model_store import load_artifact
 
 log = get_logger(__name__)
 
@@ -61,9 +62,9 @@ def train_fraud_models(splits, feature_names):
 
 def predict_fraud(features: dict):
     """Single-record prediction for API."""
-    rf  = joblib.load(MODEL_DIR / "fraud_rf.pkl")
-    iso = joblib.load(MODEL_DIR / "fraud_iso.pkl")
-    scaler = joblib.load(MODEL_DIR / "fraud_scaler.pkl")
+    rf     = load_artifact("fraud_rf.pkl")
+    iso    = load_artifact("fraud_iso.pkl")
+    scaler = load_artifact("fraud_scaler.pkl")
 
     row = np.array([[features.get(k, 0) for k in FRAUD_FEATURES]])
     row = scaler.transform(row)

@@ -13,6 +13,7 @@ from statsmodels.tsa.stattools import adfuller
 
 from src.config import MODEL_DIR
 from src.logger import get_logger
+from src.model_store import load_artifact
 
 log = get_logger(__name__)
 
@@ -67,7 +68,7 @@ def train_arima(df: pd.DataFrame, order=(2, 1, 2), forecast_steps=6):
 
 
 def forecast_inflation(steps=6):
-    data = joblib.load(MODEL_DIR / "arima_model.pkl")
+    data = load_artifact("arima_model.pkl")
     fitted = data["fitted_model"]
 
     fc  = fitted.get_forecast(steps=steps)
