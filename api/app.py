@@ -3,6 +3,7 @@ Flask REST API  –  Smart Financial Risk Intelligence System
 Endpoints:
   POST /predict-fraud
   POST /predict-credit
+  GET  /forecast-inflation?steps=6
   GET  /health
 """
 import sys
@@ -13,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 from flask import Flask, request, jsonify
 from src.fraud_detection import predict_fraud
 from src.credit_risk      import predict_credit
+from src.economic_trend   import forecast_inflation
 from src.logger           import get_logger
 from src.validation       import validate_fraud_input, validate_credit_input
 
@@ -79,6 +81,22 @@ def credit_endpoint():
         return jsonify({"success": True, "prediction": result}), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+
+@app.route("/forecast-inflation", methods=["GET"])
+def forecast_endpoint():
+    """CPI forecast for the next `steps` months (1-24, default 6)."""
+    raw = request.args.get("steps", "6")
+    steps = int(raw) if raw.isdigit() else None
+    if steps is None or not 1 <= steps <= 24:
+        return jsonify({"success": False, "error": "steps must be an integer from 1 to 24"}), 400
+
+    try:
+        result = forecast_inflation(steps=steps)
+        return jsonify({"success": True, "forecast": result}), 200
+    except Exception as e:
+        log.exception("Forecast failed")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 if __name__ == "__main__":

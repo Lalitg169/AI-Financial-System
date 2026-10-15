@@ -176,6 +176,22 @@ trained on. Invalid requests return `400` with a readable message:
 }
 ```
 
+#### `GET /forecast-inflation?steps=6`
+Forecasts CPI for the next 1–24 months (default 6) with the trained ARIMA model.
+
+Response:
+```json
+{
+  "success": true,
+  "forecast": {
+    "dates": ["2024-01-01", "2024-02-01", "2024-03-01"],
+    "forecast_values": [6.6, 6.68, 6.73],
+    "lower_bound": [5.89, 5.95, 5.93],
+    "upper_bound": [7.31, 7.42, 7.54]
+  }
+}
+```
+
 ---
 
 ### STEP 5 — Launch the Streamlit Dashboard
