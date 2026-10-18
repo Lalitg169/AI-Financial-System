@@ -66,6 +66,10 @@ def predict_fraud(features: dict):
     iso    = load_artifact("fraud_iso.pkl")
     scaler = load_artifact("fraud_scaler.pkl")
 
+    # trained with n_jobs=-1; for a single row, starting workers costs more
+    # than the prediction itself
+    rf.n_jobs = 1
+
     row = np.array([[features.get(k, 0) for k in FRAUD_FEATURES]])
     row = scaler.transform(row)
 
