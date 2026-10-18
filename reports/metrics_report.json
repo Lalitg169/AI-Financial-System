@@ -1,4 +1,5 @@
 {
+  "trained_at": "2026-10-18T18:02:45+00:00",
   "fraud": {
     "random_forest": {
       "precision": 1.0,

@@ -193,12 +193,14 @@ Response:
 ```
 
 #### `GET /model-info`
-Returns headline metrics from the last training run (`reports/metrics_report.json`),
-the saved model files, and the scikit-learn version serving them.
+Returns when the models were trained, headline metrics from that run
+(`reports/metrics_report.json`), the saved model files, and the scikit-learn
+version serving them.
 
 ```json
 {
   "success": true,
+  "trained_at": "2026-10-18T18:10:00+00:00",
   "metrics": {
     "fraud":     {"random_forest": {"precision": 1.0, "recall": 1.0, "f1_score": 1.0}, "...": "..."},
     "credit":    {"logistic_regression": {"auc_roc": 0.9693, "...": "..."}, "...": "..."},

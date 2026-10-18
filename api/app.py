@@ -120,7 +120,8 @@ def model_info():
     }
     artifacts = {f.name: f"{f.stat().st_size / 1024:.1f} KB"
                  for f in sorted(MODEL_DIR.glob("*.pkl"))}
-    return jsonify({"success": True, "metrics": metrics, "artifacts": artifacts,
+    return jsonify({"success": True, "trained_at": report.get("trained_at"),
+                    "metrics": metrics, "artifacts": artifacts,
                     "scikit_learn_version": sklearn.__version__}), 200
 
 

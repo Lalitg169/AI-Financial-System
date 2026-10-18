@@ -3,6 +3,7 @@ Train all three models and save reports.
 Run: python src/train_all.py
 """
 import sys, json
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -55,6 +56,7 @@ def main():
 
     # ── Save report ───────────────────────────────────────────────────────
     report = {
+        "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "fraud":    {k: v for k, v in fraud_metrics.items() if k != "report"},
         "credit":   {k: v for k, v in credit_metrics.items() if k != "report"},
         "inflation": arima_metrics,
