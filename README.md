@@ -135,6 +135,20 @@ Response:
 }
 ```
 
+#### `POST /predict-fraud/batch`
+Scores up to 1000 transactions in one request. Every item is validated first;
+if any are invalid, nothing is scored and the errors are returned by index.
+
+```json
+{ "transactions": [ { "amount": 1200.0, "time_of_day": 2, "...": "..." },
+                    { "amount": 45.0,   "time_of_day": 14, "...": "..." } ] }
+```
+
+Response:
+```json
+{ "success": true, "count": 2, "fraud_count": 1, "predictions": [ { "label": "FRAUD", "...": "..." }, { "label": "LEGITIMATE", "...": "..." } ] }
+```
+
 #### `POST /predict-credit`
 ```json
 {

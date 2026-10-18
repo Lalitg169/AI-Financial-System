@@ -2,6 +2,7 @@
 Flask REST API  –  Smart Financial Risk Intelligence System
 Endpoints:
   POST /predict-fraud
+  POST /predict-fraud/batch
   POST /predict-credit
   GET  /forecast-inflation?steps=6
   GET  /model-info
@@ -56,6 +57,31 @@ def fraud_endpoint():
         return jsonify({"success": True, "prediction": result}), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+
+MAX_BATCH = 1000
+
+
+@app.route("/predict-fraud/batch", methods=["POST"])
+def fraud_batch_endpoint():
+    """Input JSON: {"transactions": [ {...}, {...} ]}  (up to 1000)"""
+    data = request.get_json(silent=True)
+    txns = data.get("transactions") if isinstance(data, dict) else None
+    if not isinstance(txns, list) or not txns:
+        return jsonify({"success": False,
+                        "error": "Body must be {\"transactions\": [ ... ]} with at least one item"}), 400
+    if len(txns) > MAX_BATCH:
+        return jsonify({"success": False, "error": f"At most {MAX_BATCH} transactions per batch"}), 400
+
+    # validate everything first so one bad row doesn't leave a half-done batch
+    errors = {i: err for i, t in enumerate(txns) if (err := validate_fraud_input(t))}
+    if errors:
+        return jsonify({"success": False, "errors": errors}), 400
+
+    results = [predict_fraud(t) for t in txns]
+    return jsonify({"success": True, "count": len(results),
+                    "fraud_count": sum(r["rf_prediction"] for r in results),
+                    "predictions": results}), 200
 
 
 @app.route("/predict-credit", methods=["POST"])
