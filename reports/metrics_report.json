@@ -1,10 +1,13 @@
 {
-  "trained_at": "2026-10-18T18:02:45+00:00",
+  "trained_at": "2026-10-19T07:37:20+00:00",
   "fraud": {
+    "smote": false,
     "random_forest": {
       "precision": 1.0,
       "recall": 1.0,
       "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
       "report": "              precision    recall  f1-score   support\n\n           0       1.00      1.00      1.00       970\n           1       1.00      1.00      1.00        30\n\n    accuracy                           1.00      1000\n   macro avg       1.00      1.00      1.00      1000\nweighted avg       1.00      1.00      1.00      1000\n",
       "confusion_matrix": [
         [
@@ -15,12 +18,22 @@
           0,
           30
         ]
-      ]
+      ],
+      "tuned_threshold": {
+        "threshold": 0.58,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "pr_auc": 1.0
+      }
     },
     "isolation_forest": {
       "precision": 0.931,
       "recall": 0.9,
-      "f1_score": 0.9153
+      "f1_score": 0.9153,
+      "roc_auc": 0.9929,
+      "pr_auc": 0.9432
     },
     "feature_importance": {
       "amount": 0.0712,

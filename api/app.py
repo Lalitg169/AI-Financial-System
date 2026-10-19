@@ -138,8 +138,10 @@ def model_info():
 
     fraud, credit, infl = report["fraud"], report["credit"], report["inflation"]
     metrics = {
-        "fraud": {name: {k: fraud[name][k] for k in ("precision", "recall", "f1_score")}
+        "fraud": {name: {k: fraud[name].get(k) for k in ("precision", "recall", "f1_score", "roc_auc", "pr_auc")}
                   for name in ("random_forest", "isolation_forest")},
+        "fraud_threshold": fraud["random_forest"].get("tuned_threshold"),
+        "fraud_smote": fraud.get("smote", False),
         "credit": {name: {k: credit[name][k] for k in ("precision", "recall", "f1_score", "auc_roc")}
                    for name in ("logistic_regression", "decision_tree")},
         "inflation": {k: infl[k] for k in ("order", "aic", "rmse", "mae")},
