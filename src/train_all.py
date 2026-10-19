@@ -54,7 +54,9 @@ def main(use_smote=False):
     log.info("[2/3c] Training ARIMA inflation model")
     ts_df           = preprocess_inflation(inflation_df)
     arima_metrics, arima_results = train_arima(ts_df)
-    log.info("AIC=%s | RMSE=%s", arima_metrics["aic"], arima_metrics["rmse"])
+    bt = arima_metrics["backtest"]
+    log.info("AIC=%s | in-sample RMSE=%s | backtest MAE=%s (naive %s)",
+             arima_metrics["aic"], arima_metrics["rmse"], bt["mae"], bt["naive_mae"])
 
     # ── Save report ───────────────────────────────────────────────────────
     report = {

@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-10-19T07:37:20+00:00",
+  "trained_at": "2026-10-19T07:38:13+00:00",
   "fraud": {
     "smote": false,
     "random_forest": {
@@ -94,6 +94,12 @@
       2,
       1,
       2
-    ]
+    ],
+    "backtest": {
+      "test_months": 12,
+      "mae": 0.778,
+      "rmse": 0.8864,
+      "naive_mae": 0.3933
+    }
   }
 }

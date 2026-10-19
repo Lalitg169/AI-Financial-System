@@ -25,6 +25,22 @@ def adf_test(series):
             "stationary": result[1] < 0.05}
 
 
+def backtest_arima(series, order, test_months=12):
+    """Fit on everything except the last `test_months`, forecast them, and
+    compare with what actually happened. In-sample error only shows how well
+    the model fits data it has already seen."""
+    train, test = series[:-test_months], series[-test_months:]
+    forecast = ARIMA(train, order=order).fit().forecast(steps=test_months)
+    errors = test.values - forecast.values
+    naive_errors = test.values - train.iloc[-1]       # "CPI stays the same"
+    return {
+        "test_months": test_months,
+        "mae":       round(float(np.mean(np.abs(errors))), 4),
+        "rmse":      round(float(np.sqrt(np.mean(errors ** 2))), 4),
+        "naive_mae": round(float(np.mean(np.abs(naive_errors))), 4),
+    }
+
+
 def train_arima(df: pd.DataFrame, order=(2, 1, 2), forecast_steps=6):
     series = df["cpi"]
 
@@ -52,6 +68,7 @@ def train_arima(df: pd.DataFrame, order=(2, 1, 2), forecast_steps=6):
         "rmse": round(np.sqrt(np.mean((series - in_sample)**2)), 4),
         "adf":  adf_test(series),
         "order": order,
+        "backtest": backtest_arima(series, order),
     }
 
     results = {

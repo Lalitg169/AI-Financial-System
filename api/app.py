@@ -144,7 +144,7 @@ def model_info():
         "fraud_smote": fraud.get("smote", False),
         "credit": {name: {k: credit[name][k] for k in ("precision", "recall", "f1_score", "auc_roc")}
                    for name in ("logistic_regression", "decision_tree")},
-        "inflation": {k: infl[k] for k in ("order", "aic", "rmse", "mae")},
+        "inflation": {k: infl.get(k) for k in ("order", "aic", "rmse", "mae", "backtest")},
     }
     artifacts = {f.name: f"{f.stat().st_size / 1024:.1f} KB"
                  for f in sorted(MODEL_DIR.glob("*.pkl"))}
