@@ -1,0 +1,9 @@
+venv/
+.venv/
+.git/
+.vibe-wise/
+__pycache__/
+*.py[cod]
+data/*.csv
+screenshots/
+dashboard/
