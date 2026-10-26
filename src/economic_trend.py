@@ -41,8 +41,29 @@ def backtest_arima(series, order, test_months=12):
     }
 
 
-def train_arima(df: pd.DataFrame, order=(2, 1, 2), forecast_steps=6):
+CANDIDATE_ORDERS = [(p, d, q) for p in range(3) for d in range(2) for q in range(3)]
+
+
+def select_order(series, candidates=CANDIDATE_ORDERS, test_months=12):
+    """Pick the (p, d, q) with the lowest MAE on a validation year that sits
+    just before the final test year, so the reported backtest stays unseen."""
+    history = series[:-test_months]
+    results = {}
+    for order in candidates:
+        try:
+            results[order] = backtest_arima(history, order, test_months)["mae"]
+        except Exception as e:                 # some orders fail to converge
+            log.warning("ARIMA%s skipped: %s", order, e)
+    best = min(results, key=results.get)
+    log.info("Best ARIMA order %s (validation MAE %.4f, %d candidates)",
+             best, results[best], len(results))
+    return best
+
+
+def train_arima(df: pd.DataFrame, order=None, forecast_steps=6):
     series = df["cpi"]
+    if order is None:
+        order = select_order(series)
 
     model  = ARIMA(series, order=order)
     fitted = model.fit()

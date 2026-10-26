@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-10-19T07:38:13+00:00",
+  "trained_at": "2026-10-26T16:17:37+00:00",
   "fraud": {
     "smote": false,
     "random_forest": {
@@ -81,10 +81,10 @@
     }
   },
   "inflation": {
-    "aic": 107.52,
-    "bic": 121.41,
-    "mae": 0.3266,
-    "rmse": 0.5572,
+    "aic": 105.33,
+    "bic": 122.06,
+    "mae": 0.2863,
+    "rmse": 0.365,
     "adf": {
       "adf_stat": -1.6227,
       "p_value": 0.4713,
@@ -92,13 +92,13 @@
     },
     "order": [
       2,
-      1,
+      0,
       2
     ],
     "backtest": {
       "test_months": 12,
-      "mae": 0.778,
-      "rmse": 0.8864,
+      "mae": 0.7067,
+      "rmse": 0.7977,
       "naive_mae": 0.3933
     }
   }

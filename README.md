@@ -12,7 +12,7 @@ metrics as a sanity check, not as real-world performance.
 |------|--------|-------|
 | Fraud | Random Forest, Isolation Forest | 3% fraud. Class weights or SMOTE, tuned decision threshold |
 | Credit risk | Logistic Regression, Decision Tree | Average of both probabilities, Low / Medium / High at 35% and 65% |
-| Inflation | ARIMA(2,1,2) | 6-month forecast with confidence interval, 12-month backtest |
+| Inflation | ARIMA | Order picked on a validation year, scored on the final year, 6-month forecast |
 
 Preprocessing (imputer, scaler, encoders) is fitted on the training split
 only and saved next to the models, so the API transforms input the same way
@@ -26,11 +26,11 @@ training did.
 | Isolation Forest | F1 | 0.92 |
 | Logistic Regression | ROC-AUC | 0.97 |
 | Decision Tree | ROC-AUC | 0.94 |
-| ARIMA | Backtest MAE (naive) | 0.78 (0.39) |
+| ARIMA (2,0,2) | Backtest MAE (naive) | 0.71 (0.39) |
 
 The fraud data is almost perfectly separable, which is why the Random Forest
 scores 1.0. ARIMA loses to the naive "no change" forecast on the held-out
-year because the series is seasonal. Both are known issues.
+year even after order tuning, because the series is seasonal. Both are known issues.
 
 ## Setup
 
