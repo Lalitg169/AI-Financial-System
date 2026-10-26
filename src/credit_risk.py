@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (classification_report, precision_score,
                              recall_score, f1_score, roc_auc_score)
 
-from src.config import MODEL_DIR, RANDOM_STATE
+from src.config import MODEL_DIR, RANDOM_STATE, CREDIT_NUM_FEATURES, CREDIT_CAT_FEATURES
 from src.logger import get_logger
 from src.model_store import load_artifact
 
@@ -68,6 +68,22 @@ def train_credit_models(splits, feature_names):
     return metrics, lr, dt
 
 
+def explain_lr(lr, scaled_row, top_n=3):
+    """Per-feature contribution to the Logistic Regression score.
+
+    Inputs are standardised, so 0 means "average applicant" and
+    coefficient * value is how far this feature pushes the log-odds of
+    default away from average. Exact for a linear model; employment_type and
+    education are label-encoded, so their contributions are only rough.
+    """
+    names = CREDIT_NUM_FEATURES + CREDIT_CAT_FEATURES
+    contrib = lr.coef_[0] * scaled_row[0]
+    order = np.argsort(-np.abs(contrib))[:top_n]
+    return [{"feature": names[i],
+             "effect": "raises risk" if contrib[i] > 0 else "lowers risk",
+             "weight": round(float(contrib[i]), 3)} for i in order]
+
+
 def predict_credit(features: dict):
     """Single-record prediction for API."""
     lr       = load_artifact("credit_lr.pkl")
@@ -103,4 +119,5 @@ def predict_credit(features: dict):
         "avg_probability": round(avg_prob * 100, 2),
         "risk_category":   risk_category(avg_prob),
         "default_prediction": int(avg_prob > 0.5),
+        "top_factors":     explain_lr(lr, row),
     }

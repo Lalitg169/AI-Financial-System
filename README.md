@@ -84,6 +84,10 @@ Credit requests take `age`, `income`, `loan_amount`, `loan_tenure`,
 (`Salaried`, `Self-employed`, `Business`) and `education`
 (`Graduate`, `Post-Graduate`, `Under-Graduate`).
 
+The credit response also includes `top_factors`: the three inputs that
+pushed the Logistic Regression score furthest from an average applicant,
+e.g. `{"feature": "credit_score", "effect": "lowers risk", "weight": -2.1}`.
+
 Every field is required. Invalid input returns `400` with a message, e.g.
 `{"success": false, "error": "Missing required fields: amount"}`.
 
