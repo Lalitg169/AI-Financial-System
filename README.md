@@ -79,6 +79,13 @@ curl -X POST localhost:5000/predict-fraud -H "Content-Type: application/json" \
 }
 ```
 
+```bash
+curl -X POST localhost:5000/predict-credit -H "Content-Type: application/json" \
+  -d '{"age": 25, "income": 20000, "loan_amount": 30000, "loan_tenure": 60,
+       "credit_score": 350, "existing_loans": 4,
+       "employment_type": "Business", "education": "Under-Graduate"}'
+```
+
 Credit requests take `age`, `income`, `loan_amount`, `loan_tenure`,
 `credit_score`, `existing_loans`, `employment_type`
 (`Salaried`, `Self-employed`, `Business`) and `education`
@@ -114,5 +121,21 @@ src/model_store.py      cached model loading
 src/train_all.py        trains everything, writes reports/metrics_report.json
 models/                 saved models, scalers, encoders
 ```
+
+## Limitations
+
+- All data is synthetic. Fraud cases are easy to separate, so the fraud
+  scores say little about real performance.
+- The CPI series is seasonal and plain ARIMA doesn't model that, so it
+  loses to the naive forecast.
+- `employment_type` and `education` are label-encoded, which gives
+  unordered categories an order. One-hot encoding would be more correct.
+- No automated tests yet.
+
+## Next steps
+
+- Real datasets: UCI credit card default, Kaggle credit card fraud, MOSPI CPI.
+- A seasonal model (SARIMA) for CPI.
+- Tests and CI.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed.
